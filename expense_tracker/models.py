@@ -2,6 +2,12 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from datetime import date, datetime
+from expense_tracker.utils import (
+    validate_amount,
+    validate_category,
+    validate_date,
+    validate_description,
+)
 
 
 @dataclass(slots=True)
@@ -14,18 +20,10 @@ class Expense:
     expense_date: date
 
     def __post_init__(self) -> None:
-        """Validate the expense after initialization."""
-        if self.amount <= 0:
-            raise ValueError("Amount must be greater than zero.")
-
-        self.category = self.category.strip()
-        self.description = self.description.strip()
-
-        if not self.category:
-            raise ValueError("Category cannot be empty.")
-
-        if not self.description:
-            raise ValueError("Description cannot be empty.")
+        self.amount = validate_amount(self.amount)
+        self.category = validate_category(self.category)
+        self.description = validate_description(self.description)
+        self.expense_date = validate_date(self.expense_date)
 
     def to_dict(self) -> dict:
         """Convert the expense into a JSON-serializable dictionary."""
