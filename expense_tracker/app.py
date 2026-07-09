@@ -1,18 +1,35 @@
 from datetime import date
 
 from expense_tracker.models import Expense
+from expense_tracker.storage import JsonStorage
 
 
 def main():
-    expense = Expense(
-        amount=250,
-        category="Food",
-        description="Pizza",
-        expense_date=date.today(),
-    )
+    storage = JsonStorage("data/expenses.json")
 
-    print(expense)
-    print(expense.to_dict())
+    expenses = [
+        Expense(
+            amount=300,
+            category="Food",
+            description="Pizza",
+            expense_date=date.today(),
+        ),
+        Expense(
+            amount=120,
+            category="Travel",
+            description="Metro",
+            expense_date=date.today(),
+        ),
+    ]
+
+    storage.save(expenses)
+
+    loaded = storage.load()
+
+    print("Saved Expenses")
+
+    for expense in loaded:
+        print(expense)
 
 
 if __name__ == "__main__":
