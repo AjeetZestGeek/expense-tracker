@@ -1,0 +1,21 @@
+# Virtual Environment
+.venv/
+
+# Python cache
+__pycache__/
+*.py[cod]
+
+# Test reports
+htmlcov/
+.coverage
+
+# IDE
+.vscode/
+.idea/
+
+# Logs
+*.log
+
+# Local data
+data/*.json
+!data/.gitkeep
