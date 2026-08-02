@@ -1,5 +1,6 @@
 from datetime import date
 
+
 def test_add_expense(manager):
     manager.add_expense(
         500,
@@ -10,11 +11,13 @@ def test_add_expense(manager):
 
     assert len(manager.get_all_expenses()) == 1
 
+
 def test_total_expenses(manager):
     manager.add_expense(100, "Food", "Pizza", date.today())
     manager.add_expense(200, "Travel", "Bus", date.today())
 
     assert manager.total_expenses() == 300
+
 
 def test_search(manager):
     manager.add_expense(
@@ -27,6 +30,7 @@ def test_search(manager):
     results = manager.search("shoe")
 
     assert len(results) == 1
+
 
 def test_filter(manager):
     manager.add_expense(
@@ -47,6 +51,7 @@ def test_filter(manager):
 
     assert len(food) == 1
 
+
 def test_delete(manager):
     manager.add_expense(
         100,
@@ -59,6 +64,7 @@ def test_delete(manager):
 
     assert len(manager.get_all_expenses()) == 0
 
+
 def test_search_not_found(manager):
     manager.add_expense(
         200,
@@ -69,5 +75,80 @@ def test_search_not_found(manager):
 
     assert manager.search("Laptop") == []
 
+
+def test_update_expense(manager):
+    manager.add_expense(
+        100,
+        "Food",
+        "Pizza",
+        date.today(),
+    )
+
+    updated = manager.update_expense(
+        0,
+        amount=250,
+        description="Burger",
+    )
+
+    assert updated.amount == 250
+    assert updated.description == "Burger"
+    assert updated.category == "Food"
+
+
 def test_empty_total(manager):
     assert manager.total_expenses() == 0
+
+
+def test_count_expenses(manager):
+    assert manager.count_expenses() == 0
+
+    manager.add_expense(
+        100,
+        "Food",
+        "Pizza",
+        date.today(),
+    )
+
+    assert manager.count_expenses() == 1
+
+
+def test_latest_expense(manager):
+    manager.add_expense(
+        100,
+        "Food",
+        "Pizza",
+        date.today(),
+    )
+
+    manager.add_expense(
+        200,
+        "Travel",
+        "Metro",
+        date.today(),
+    )
+
+    latest = manager.latest_expense()
+
+    assert latest.description == "Metro"
+
+
+def test_expenses_by_date(manager):
+    today = date.today()
+
+    manager.add_expense(
+        100,
+        "Food",
+        "Pizza",
+        today,
+    )
+
+    manager.add_expense(
+        200,
+        "Travel",
+        "Bus",
+        today,
+    )
+
+    expenses = manager.expenses_by_date(today)
+
+    assert len(expenses) == 2
