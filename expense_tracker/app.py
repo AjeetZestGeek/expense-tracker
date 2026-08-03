@@ -1,39 +1,14 @@
-from datetime import date
+"""Application entry point for the Expense Tracker API."""
 
-from expense_tracker.manager import ExpenseManager
-from expense_tracker.storage import JsonStorage
+from fastapi import FastAPI
 
+from expense_tracker.api.routes.health import router as health_router
+from expense_tracker.api.routes.expenses import router as expense_router
 
-def main():
-    storage = JsonStorage("data/expenses.json")
-    manager = ExpenseManager(storage)
+app = FastAPI(
+    title="Expense Tracker API",
+    description="REST API for managing expenses.",
+    version="1.0.0",
+)
 
-    manager.add_expense(
-        250,
-        "Food",
-        "Burger",
-        date.today(),
-    )
-
-    manager.add_expense(
-        120,
-        "Travel",
-        "Metro",
-        date.today(),
-    )
-
-    print("\nAll Expenses\n")
-
-    for expense in manager.get_all_expenses():
-        print(expense)
-
-    print("\nFood Expenses")
-
-    for expense in manager.filter_by_category("Food"):
-        print(expense)
-
-    print(f"\nTotal: ₹{manager.total_expenses():.2f}")
-
-
-if __name__ == "__main__":
-    main()
+app.include_router(expense_router)

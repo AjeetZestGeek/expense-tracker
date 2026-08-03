@@ -1,47 +1,71 @@
-# Expense Tracker CLI – Project Context
+# Expense Tracker (Python + FastAPI)
 
-## Project Goal
+A production-quality **Expense Tracker** project built incrementally to demonstrate modern Python development practices, clean architecture, REST API development, and comprehensive testing with **pytest**.
 
-Build a production-quality Python command-line Expense Tracker that demonstrates modern Python development practices, clean architecture, and comprehensive testing using **pytest**.
+The project started as a Python application with a service layer and JSON persistence and is now evolving into a **FastAPI REST API** that will later be consumed by an **Angular frontend**.
 
-The project is being developed incrementally in phases. Each phase should include:
+---
 
-* Clean, maintainable code
-* Type hints
-* Proper documentation (docstrings)
-* Unit tests with `pytest`
-* Explanation of important concepts
-* Interview-level best practices
-* Git commit message after each phase
+# Project Goals
 
-The assistant should act as a senior Python mentor, explaining **why** something is implemented in a particular way instead of only providing code.
+* Write clean, maintainable Python code.
+* Follow SOLID principles and Clean Architecture.
+* Build a reusable business layer independent of the presentation layer.
+* Practice Test-Driven Development (TDD) with `pytest`.
+* Build a REST API using FastAPI.
+* Integrate the backend with an Angular frontend.
+* Prepare the project for future migration to a database without changing business logic.
 
 ---
 
 # Technology Stack
 
+## Current
+
+### Backend
+
 * Python 3.12+
-* pytest
-* pytest-cov
+* FastAPI
+* Uvicorn
+* Pydantic
 * JSON
 * pathlib
 * dataclasses
 * typing
 * datetime
 
-Future additions:
+### Testing
 
-* logging
-* csv
-* black
-* ruff
+* pytest
+* pytest-cov
+* FastAPI TestClient (planned)
+
+## Future
+
+### Backend
+
+* SQLite / PostgreSQL
+* SQLAlchemy
+* Logging
+* CSV Import / Export
+* Docker
+
+### Frontend
+
+* Angular
+* Angular Material
+* TypeScript
+
+### Tooling
+
+* Ruff
+* Black
 * pre-commit
 * GitHub Actions
-* Docker (optional)
 
 ---
 
-# Project Structure
+# Current Project Structure
 
 ```text
 expense-tracker/
@@ -50,13 +74,23 @@ expense-tracker/
 ├── expense_tracker/
 │   ├── __init__.py
 │   ├── app.py
-│   ├── models.py
 │   ├── manager.py
+│   ├── models.py
 │   ├── storage.py
+│   ├── schemas.py
 │   ├── utils.py
+│   ├── exceptions.py
 │   ├── report.py
 │   ├── logger.py
-│   └── exceptions.py
+│   │
+│   └── api/
+│       ├── __init__.py
+│       ├── dependencies.py
+│       ├── mappers.py
+│       └── routes/
+│           ├── __init__.py
+│           ├── health.py
+│           └── expenses.py
 │
 ├── tests/
 │   ├── __init__.py
@@ -64,7 +98,8 @@ expense-tracker/
 │   ├── test_models.py
 │   ├── test_utils.py
 │   ├── test_storage.py
-│   └── test_manager.py
+│   ├── test_manager.py
+│   └── test_api.py (planned)
 │
 ├── data/
 │   └── expenses.json
@@ -77,21 +112,76 @@ expense-tracker/
 
 ---
 
+# Architecture
+
+```text
+                 Angular (Upcoming)
+                        │
+                  HTTP / JSON
+                        │
+                        ▼
+                 FastAPI Routers
+                        │
+                        ▼
+                ExpenseManager
+             (Business / Service Layer)
+                        │
+                        ▼
+                 JsonStorage
+             (Persistence Layer)
+                        │
+                        ▼
+                 expenses.json
+```
+
+## Layer Responsibilities
+
+### API Layer
+
+Responsible for:
+
+* HTTP requests
+* Request validation
+* Response serialization
+* Status codes
+* Routing
+
+### Business Layer
+
+Responsible for:
+
+* Expense operations
+* Validation
+* Search
+* Filtering
+* Aggregation
+
+### Persistence Layer
+
+Responsible for:
+
+* Reading JSON
+* Writing JSON
+* Storage-related exceptions
+
+Each layer has a single responsibility and can evolve independently.
+
+---
+
 # Completed Phases
 
-## ✅ Phase 1 – Project Setup
+## ✅ Phase 1 — Project Setup
 
-Completed:
+Completed
 
 * Project structure
 * Virtual environment
-* requirements.txt
+* Git initialization
+* Package organization
 * pytest configuration
 * .gitignore
-* Git initialization
-* Package structure
 
-Learned:
+Concepts
 
 * Python packages
 * Virtual environments
@@ -99,189 +189,192 @@ Learned:
 
 ---
 
-## ✅ Phase 2 – Expense Model
+## ✅ Phase 2 — Expense Model
 
-Implemented:
+Implemented
 
 * Expense dataclass
 * Validation
-* to_dict()
-* from_dict()
-* **str**()
-* Type hints
-
-Testing:
-
-* Model creation
-* Invalid values
 * Serialization
+* `to_dict()`
+* `from_dict()`
+* `__str__()`
 
-Learned:
+Concepts
 
-* dataclasses
-* **post_init**
-* Class methods
+* Dataclasses
+* `__post_init__`
 * Object serialization
 
 ---
 
-## ✅ Phase 3 – Validation Utilities
+## ✅ Phase 3 — Validation Utilities
 
-Created:
+Implemented
 
-* validate_amount()
-* validate_category()
-* validate_description()
-* validate_date()
+* `validate_amount()`
+* `validate_category()`
+* `validate_description()`
+* `validate_date()`
 
-Refactored:
+Concepts
 
-* Expense model now uses reusable validators.
-
-Testing:
-
-* pytest.mark.parametrize
-* Type validation
-* Value validation
-
-Learned:
-
+* Reusable validation
+* Single Responsibility Principle
 * Separation of Concerns
-* Single Responsibility Principle (SRP)
-* Reusable functions
 
 ---
 
-## ✅ Phase 4 – JSON Storage
+## ✅ Phase 4 — JSON Storage
 
-Created:
+Implemented
 
-JsonStorage
+* JsonStorage
+* `load()`
+* `save()`
 
-Implemented:
-
-* load()
-* save()
-
-Features:
+Features
 
 * JSON persistence
-* pathlib
-* StorageError exception
 * Missing file handling
-* Invalid JSON handling
+* Corrupted JSON handling
+* StorageError
 
-Testing:
+Concepts
 
-* tmp_path fixture
-* File operations
-* Corrupted JSON
-* Empty files
-
-Learned:
-
+* Persistence Layer
 * File handling
-* JSON
-* pathlib
-* Persistence layer
+* Exception handling
 
 ---
 
-## ✅ Phase 5 – Expense Manager
+## ✅ Phase 5 — Expense Manager
 
-Created:
+Implemented
 
-ExpenseManager
-
-Implemented:
-
-* add_expense()
-* get_all_expenses()
-* delete_expense()
-* search()
-* filter_by_category()
-* total_expenses()
-
-Additional challenge methods implemented:
-
-* update_expense()
-* count_expenses()
-* latest_expense()
-* expenses_by_date()
-
-Business Logic:
-
-ExpenseManager sits between the CLI and the storage layer.
-
-Architecture:
-
-CLI
-↓
-ExpenseManager
-↓
-JsonStorage
-↓
-expenses.json
-
-Testing:
-
-* CRUD operations
+* Add Expense
+* View Expenses
+* Update Expense
+* Delete Expense
 * Search
-* Filter
-* Total calculation
-* Fixtures using conftest.py
+* Filter by category
+* Expenses by date
+* Total expenses
+* Expense count
+* Latest expense
 
-Learned:
+Concepts
 
-* Service Layer pattern
+* Service Layer Pattern
+* CRUD operations
 * Business logic
-* CRUD
 * Aggregation
-* Shared pytest fixtures
 
 ---
 
-# Current Architecture
+## ✅ Phase 6 — FastAPI Foundation (Current)
+
+Implemented
+
+### FastAPI
+
+* FastAPI application setup
+* Uvicorn configuration
+* Automatic Swagger documentation
+* OpenAPI generation
+
+### API Architecture
+
+* API package
+* Router-based architecture
+* Dependency Injection
+* Shared dependencies
+* API mapper layer
+
+### Endpoints
+
+* `GET /`
+* `GET /health`
+* `GET /expenses`
+* `POST /expenses`
+
+### API Models
+
+* ExpenseCreate
+* ExpenseUpdate
+* ExpenseResponse
+
+Concepts Learned
+
+* REST APIs
+* APIRouter
+* Dependency Injection
+* Request/Response schemas
+* Pydantic models
+* Response models
+* HTTP status codes
+* OpenAPI
+* Separation of domain models and API models
+
+---
+
+# Current API
+
+| Method | Endpoint                        | Status      |
+| ------ | ------------------------------- | ----------- |
+| GET    | `/`                             | ✅ Completed |
+| GET    | `/health`                       | ✅ Completed |
+| GET    | `/expenses`                     | ✅ Completed |
+| POST   | `/expenses`                     | ✅ Completed |
+| GET    | `/expenses/{id}`                | ⏳ Planned   |
+| PUT    | `/expenses/{id}`                | ⏳ Planned   |
+| DELETE | `/expenses/{id}`                | ⏳ Planned   |
+| GET    | `/expenses/search`              | ⏳ Planned   |
+| GET    | `/expenses/category/{category}` | ⏳ Planned   |
+| GET    | `/expenses/date/{date}`         | ⏳ Planned   |
+| GET    | `/expenses/total`               | ⏳ Planned   |
+| GET    | `/expenses/count`               | ⏳ Planned   |
+| GET    | `/expenses/latest`              | ⏳ Planned   |
+
+---
+
+# Running the Application
+
+Install dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+Run the API
+
+```bash
+uvicorn expense_tracker.app:app --reload
+```
+
+Open Swagger
 
 ```text
-             app.py (CLI)
-                    │
-                    ▼
-          ExpenseManager
-                    │
-                    ▼
-            JsonStorage
-                    │
-                    ▼
-              expenses.json
+http://127.0.0.1:8000/docs
+```
 
-Expense
-│
-├── Validation
-├── Serialization
-└── Type Safety
+Open ReDoc
+
+```text
+http://127.0.0.1:8000/redoc
 ```
 
 ---
 
-# Testing Status
+# Running Tests
 
-Implemented:
-
-* pytest
-* Fixtures
-* Parametrize
-* Exception testing
-* tmp_path
-* CRUD tests
-
-Tests are executed using:
+Run all tests
 
 ```bash
 python -m pytest -v
 ```
 
-Coverage command:
+Run with coverage
 
 ```bash
 python -m pytest --cov=expense_tracker
@@ -291,129 +384,77 @@ python -m pytest --cov=expense_tracker
 
 # Coding Standards
 
-Continue following these rules:
+The project follows these principles:
 
-* Use type hints everywhere.
-* Use docstrings for public classes and methods.
-* Prefer pathlib over os.path.
-* Keep functions focused on one responsibility.
-* Reuse existing validation utilities.
-* Follow SOLID principles where appropriate.
-* Avoid duplicated code.
-* Write tests for every new feature.
-* Explain why code is written that way.
-* End every phase with an appropriate Git commit message.
+* Clean Architecture
+* SOLID Principles
+* Type hints everywhere
+* Public docstrings
+* Small, focused functions
+* Separation of Concerns
+* Reusable validation
+* Comprehensive testing
 
 ---
 
 # Next Phase
 
-## Phase 6 – Interactive Command Line Interface (CLI)
+The next milestone focuses on completing the REST API.
 
-The next phase should implement a complete menu-driven CLI.
+## Planned Work
 
-Requirements:
-
-* Professional terminal menu
-* Add Expense
-* View Expenses
-* Update Expense
-* Delete Expense
-* Search Expenses
-* Filter by Category
-* View Expenses by Date
-* Show Total Expenses
-* Show Expense Count
-* Show Latest Expense
-* Exit application
-
-CLI should:
-
-* Validate user input
-* Handle invalid choices gracefully
-* Catch exceptions without crashing
-* Keep UI separate from business logic
-* Use ExpenseManager for all operations
-
-Suggested structure:
-
-* Keep `app.py` minimal.
-* Create reusable helper functions for menu display and input handling if needed.
-* Follow clean architecture.
-
-Testing:
-
-* Add appropriate tests for any helper functions where practical.
-* Explain what is and isn't worth unit testing for CLI code.
+* Stable unique expense IDs
+* GET expense by ID
+* Update expense endpoint
+* Delete expense endpoint
+* Search endpoint
+* Category filter endpoint
+* Date filter endpoint
+* Total endpoint
+* Count endpoint
+* Latest expense endpoint
+* FastAPI TestClient integration
+* API unit tests
 
 ---
 
-# Future Phases
+# Future Roadmap
 
-Phase 7 – Reports
+## Backend
 
-* Monthly report
-* Category summary
-* Daily summary
+* SQLAlchemy integration
+* SQLite/PostgreSQL support
+* Authentication & Authorization
+* Logging
+* CSV Import/Export
 
-Phase 8 – CSV Export
+## Frontend
 
-* Export expenses
-* Import expenses
+* Angular application
+* Expense Dashboard
+* CRUD interface
+* Charts and Reports
 
-Phase 9 – Logging
+## DevOps
 
-* logging module
-* Error logs
-* Activity logs
-
-Phase 10 – Custom Exceptions
-
-* Domain-specific exceptions
-* Better error handling
-
-Phase 11 – Advanced pytest
-
-* Mocking
-* monkeypatch
-* capsys
-* More fixtures
-
-Phase 12 – Test Coverage
-
-* pytest-cov
-* HTML reports
-
-Phase 13 – Code Quality
-
-* black
-* ruff
+* Ruff
+* Black
 * pre-commit
-
-Phase 14 – GitHub Actions
-
-* CI pipeline
-* Automated testing
-
-Phase 15 – Documentation
-
-* Complete README
-* Architecture diagrams
-* Installation guide
-* Usage examples
+* GitHub Actions
+* Docker
 
 ---
 
-# Mentor Instructions
+# Long-Term Vision
 
-Continue the project from the current phase without repeating completed work.
+The goal of this project is to become a production-quality full-stack application demonstrating:
 
-For every phase:
+* Clean Architecture
+* REST API Design
+* FastAPI
+* Automated Testing
+* Angular Integration
+* Modern Python Best Practices
+* Scalable Software Design
 
-1. Explain the design before writing code.
-2. Build production-quality code.
-3. Explain important Python concepts.
-4. Write comprehensive pytest tests.
-5. Suggest improvements where appropriate.
-6. End with a Git commit message.
-7. Maintain consistency with the existing architecture and coding style.
+The project is intentionally built in small phases so each concept can be understood before moving to the next, resulting in a maintainable, interview-ready, and portfolio-quality application.
