@@ -1,344 +1,216 @@
-# Expense Tracker (Python + FastAPI)
+# Expense Tracker API (Python + FastAPI)
 
-A production-quality **Expense Tracker** project built incrementally to demonstrate modern Python development practices, clean architecture, REST API development, and comprehensive testing with **pytest**.
+A production-quality Expense Tracker built incrementally to demonstrate modern Python development, clean architecture, REST API design, and comprehensive testing using **pytest**.
 
-The project started as a Python application with a service layer and JSON persistence and is now evolving into a **FastAPI REST API** that will later be consumed by an **Angular frontend**.
+The project follows a layered architecture where the API layer, business logic, and persistence layer are completely separated, making the application maintainable and easy to extend.
 
 ---
 
-# Project Goals
+# Features
 
-* Write clean, maintainable Python code.
-* Follow SOLID principles and Clean Architecture.
-* Build a reusable business layer independent of the presentation layer.
-* Practice Test-Driven Development (TDD) with `pytest`.
-* Build a REST API using FastAPI.
-* Integrate the backend with an Angular frontend.
-* Prepare the project for future migration to a database without changing business logic.
+## Expense Management
+
+* Create Expense
+* View All Expenses
+* View Expense by UUID
+* Update Expense
+* Delete Expense
+* Search Expenses *(Upcoming)*
+* Filter by Category *(Upcoming)*
+* Filter by Date *(Upcoming)*
+* Total Expenses *(Upcoming)*
+* Expense Count *(Upcoming)*
+* Latest Expense *(Upcoming)*
 
 ---
 
 # Technology Stack
 
-## Current
+## Backend
 
-### Backend
-
-* Python 3.12+
+* Python 3.13+
 * FastAPI
 * Uvicorn
-* Pydantic
-* JSON
+* Pydantic v2
+* Dataclasses
+* UUID
+* JSON Storage
 * pathlib
-* dataclasses
-* typing
-* datetime
 
-### Testing
+## Testing
 
 * pytest
 * pytest-cov
-* FastAPI TestClient (planned)
+* FastAPI TestClient
 
 ## Future
 
-### Backend
-
-* SQLite / PostgreSQL
 * SQLAlchemy
-* Logging
-* CSV Import / Export
+* PostgreSQL
 * Docker
-
-### Frontend
-
-* Angular
-* Angular Material
-* TypeScript
-
-### Tooling
-
+* GitHub Actions
 * Ruff
 * Black
-* pre-commit
-* GitHub Actions
-
----
-
-# Current Project Structure
-
-```text
-expense-tracker/
-
-│
-├── expense_tracker/
-│   ├── __init__.py
-│   ├── app.py
-│   ├── manager.py
-│   ├── models.py
-│   ├── storage.py
-│   ├── schemas.py
-│   ├── utils.py
-│   ├── exceptions.py
-│   ├── report.py
-│   ├── logger.py
-│   │
-│   └── api/
-│       ├── __init__.py
-│       ├── dependencies.py
-│       ├── mappers.py
-│       └── routes/
-│           ├── __init__.py
-│           ├── health.py
-│           └── expenses.py
-│
-├── tests/
-│   ├── __init__.py
-│   ├── conftest.py
-│   ├── test_models.py
-│   ├── test_utils.py
-│   ├── test_storage.py
-│   ├── test_manager.py
-│   └── test_api.py (planned)
-│
-├── data/
-│   └── expenses.json
-│
-├── requirements.txt
-├── pytest.ini
-├── README.md
-└── .gitignore
-```
+* Angular Frontend
 
 ---
 
 # Architecture
 
 ```text
-                 Angular (Upcoming)
-                        │
-                  HTTP / JSON
-                        │
-                        ▼
-                 FastAPI Routers
-                        │
-                        ▼
-                ExpenseManager
-             (Business / Service Layer)
-                        │
-                        ▼
-                 JsonStorage
-             (Persistence Layer)
-                        │
-                        ▼
-                 expenses.json
+                        Angular (Upcoming)
+                               │
+                          HTTP / JSON
+                               │
+                               ▼
+                        FastAPI Routers
+                               │
+                    Dependency Injection
+                               │
+                               ▼
+                      ExpenseManager
+                    (Business Logic)
+                               │
+                               ▼
+                        JsonStorage
+                      (Persistence)
+                               │
+                               ▼
+                        expenses.json
 ```
 
-## Layer Responsibilities
+---
 
-### API Layer
+# Project Structure
 
-Responsible for:
+```text
+expense-tracker/
 
-* HTTP requests
-* Request validation
-* Response serialization
-* Status codes
-* Routing
+expense_tracker/
+│
+├── api/
+│   ├── dependencies.py
+│   ├── mappers.py
+│   └── routes/
+│       ├── health.py
+│       └── expenses.py
+│
+├── app.py
+├── exceptions.py
+├── manager.py
+├── models.py
+├── report.py
+├── schemas.py
+├── storage.py
+└── utils.py
 
-### Business Layer
+tests/
 
-Responsible for:
+data/
+```
 
-* Expense operations
-* Validation
-* Search
-* Filtering
-* Aggregation
+---
 
-### Persistence Layer
+# Current REST API
 
-Responsible for:
+| Method | Endpoint                 | Status |
+| ------ | ------------------------ | ------ |
+| GET    | `/`                      | ✅      |
+| GET    | `/health`                | ✅      |
+| GET    | `/expenses`              | ✅      |
+| GET    | `/expenses/{expense_id}` | ✅      |
+| POST   | `/expenses`              | ✅      |
+| PUT    | `/expenses/{expense_id}` | ✅      |
+| DELETE | `/expenses/{expense_id}` | ✅      |
 
-* Reading JSON
-* Writing JSON
-* Storage-related exceptions
+---
 
-Each layer has a single responsibility and can evolve independently.
+# UUID Based Resources
+
+Every expense now owns a stable UUID.
+
+Example:
+
+```json
+{
+    "id": "b372f0ef-f27f-4e61-8cd5-ad599010620b",
+    "amount": 250,
+    "category": "Food",
+    "description": "Lunch",
+    "expense_date": "2026-08-07"
+}
+```
+
+Using UUIDs instead of list indexes makes the API production-ready and prevents identifiers from changing when expenses are deleted.
+
+---
+
+# Design Principles
+
+* Clean Architecture
+* SOLID Principles
+* Single Responsibility Principle
+* Dependency Injection
+* Separation of Concerns
+* RESTful API Design
+* Reusable Business Logic
+* Type Hints
+* Public Docstrings
 
 ---
 
 # Completed Phases
 
-## ✅ Phase 1 — Project Setup
+## Phase 1
 
-Completed
+* Project Setup
 
-* Project structure
-* Virtual environment
-* Git initialization
-* Package organization
-* pytest configuration
-* .gitignore
+## Phase 2
 
-Concepts
+* Expense Dataclass
 
-* Python packages
-* Virtual environments
-* Project organization
+## Phase 3
 
----
+* Validation Utilities
 
-## ✅ Phase 2 — Expense Model
+## Phase 4
 
-Implemented
+* JSON Storage
 
-* Expense dataclass
-* Validation
-* Serialization
-* `to_dict()`
-* `from_dict()`
-* `__str__()`
+## Phase 5
 
-Concepts
+* Expense Manager
 
-* Dataclasses
-* `__post_init__`
-* Object serialization
-
----
-
-## ✅ Phase 3 — Validation Utilities
-
-Implemented
-
-* `validate_amount()`
-* `validate_category()`
-* `validate_description()`
-* `validate_date()`
-
-Concepts
-
-* Reusable validation
-* Single Responsibility Principle
-* Separation of Concerns
-
----
-
-## ✅ Phase 4 — JSON Storage
-
-Implemented
-
-* JsonStorage
-* `load()`
-* `save()`
-
-Features
-
-* JSON persistence
-* Missing file handling
-* Corrupted JSON handling
-* StorageError
-
-Concepts
-
-* Persistence Layer
-* File handling
-* Exception handling
-
----
-
-## ✅ Phase 5 — Expense Manager
-
-Implemented
-
-* Add Expense
-* View Expenses
-* Update Expense
-* Delete Expense
-* Search
-* Filter by category
-* Expenses by date
-* Total expenses
-* Expense count
-* Latest expense
-
-Concepts
-
-* Service Layer Pattern
-* CRUD operations
-* Business logic
-* Aggregation
-
----
-
-## ✅ Phase 6 — FastAPI Foundation (Current)
-
-Implemented
+## Phase 6
 
 ### FastAPI
 
-* FastAPI application setup
-* Uvicorn configuration
-* Automatic Swagger documentation
-* OpenAPI generation
-
-### API Architecture
-
-* API package
-* Router-based architecture
+* FastAPI initialization
+* Router architecture
+* Swagger/OpenAPI
 * Dependency Injection
-* Shared dependencies
-* API mapper layer
+* Request/Response Schemas
+* API Mappers
 
-### Endpoints
+### CRUD APIs
 
-* `GET /`
-* `GET /health`
-* `GET /expenses`
-* `POST /expenses`
+* GET All Expenses
+* GET Expense by UUID
+* POST Expense
+* PUT Expense
+* DELETE Expense
 
-### API Models
+### UUID Migration
 
-* ExpenseCreate
-* ExpenseUpdate
-* ExpenseResponse
-
-Concepts Learned
-
-* REST APIs
-* APIRouter
-* Dependency Injection
-* Request/Response schemas
-* Pydantic models
-* Response models
-* HTTP status codes
-* OpenAPI
-* Separation of domain models and API models
+* UUID-based Expense model
+* UUID serialization
+* UUID deserialization
+* UUID API responses
+* UUID service layer
 
 ---
 
-# Current API
-
-| Method | Endpoint                        | Status      |
-| ------ | ------------------------------- | ----------- |
-| GET    | `/`                             | ✅ Completed |
-| GET    | `/health`                       | ✅ Completed |
-| GET    | `/expenses`                     | ✅ Completed |
-| POST   | `/expenses`                     | ✅ Completed |
-| GET    | `/expenses/{id}`                | ⏳ Planned   |
-| PUT    | `/expenses/{id}`                | ⏳ Planned   |
-| DELETE | `/expenses/{id}`                | ⏳ Planned   |
-| GET    | `/expenses/search`              | ⏳ Planned   |
-| GET    | `/expenses/category/{category}` | ⏳ Planned   |
-| GET    | `/expenses/date/{date}`         | ⏳ Planned   |
-| GET    | `/expenses/total`               | ⏳ Planned   |
-| GET    | `/expenses/count`               | ⏳ Planned   |
-| GET    | `/expenses/latest`              | ⏳ Planned   |
-
----
-
-# Running the Application
+# Running the Project
 
 Install dependencies
 
@@ -352,13 +224,13 @@ Run the API
 uvicorn expense_tracker.app:app --reload
 ```
 
-Open Swagger
+Swagger
 
 ```text
 http://127.0.0.1:8000/docs
 ```
 
-Open ReDoc
+ReDoc
 
 ```text
 http://127.0.0.1:8000/redoc
@@ -368,13 +240,11 @@ http://127.0.0.1:8000/redoc
 
 # Running Tests
 
-Run all tests
-
 ```bash
 python -m pytest -v
 ```
 
-Run with coverage
+Coverage
 
 ```bash
 python -m pytest --cov=expense_tracker
@@ -382,79 +252,47 @@ python -m pytest --cov=expense_tracker
 
 ---
 
-# Coding Standards
+# Next Milestone
 
-The project follows these principles:
+Phase 7 – Query & Reporting APIs
 
-* Clean Architecture
-* SOLID Principles
-* Type hints everywhere
-* Public docstrings
-* Small, focused functions
-* Separation of Concerns
-* Reusable validation
-* Comprehensive testing
-
----
-
-# Next Phase
-
-The next milestone focuses on completing the REST API.
-
-## Planned Work
-
-* Stable unique expense IDs
-* GET expense by ID
-* Update expense endpoint
-* Delete expense endpoint
-* Search endpoint
-* Category filter endpoint
-* Date filter endpoint
-* Total endpoint
-* Count endpoint
-* Latest expense endpoint
-* FastAPI TestClient integration
-* API unit tests
+* Search Expenses
+* Category Filter
+* Date Filter
+* Total Expenses
+* Expense Count
+* Latest Expense
+* Monthly Report
+* Category Summary
 
 ---
 
-# Future Roadmap
+# Long-Term Roadmap
 
-## Backend
-
-* SQLAlchemy integration
-* SQLite/PostgreSQL support
+* SQLAlchemy Repository
+* PostgreSQL
 * Authentication & Authorization
-* Logging
-* CSV Import/Export
-
-## Frontend
-
-* Angular application
-* Expense Dashboard
-* CRUD interface
-* Charts and Reports
-
-## DevOps
-
-* Ruff
-* Black
-* pre-commit
-* GitHub Actions
+* Angular Frontend
+* Charts & Dashboard
 * Docker
+* GitHub Actions
+* CI/CD
+* Production Deployment
 
 ---
 
-# Long-Term Vision
+# Learning Outcomes
 
-The goal of this project is to become a production-quality full-stack application demonstrating:
+This project demonstrates:
 
-* Clean Architecture
-* REST API Design
+* Modern Python
 * FastAPI
+* REST API Design
+* UUID-based Resources
+* Layered Architecture
+* Service Layer Pattern
+* Dependency Injection
+* JSON Persistence
+* API Validation
 * Automated Testing
-* Angular Integration
-* Modern Python Best Practices
-* Scalable Software Design
-
-The project is intentionally built in small phases so each concept can be understood before moving to the next, resulting in a maintainable, interview-ready, and portfolio-quality application.
+* Production-Oriented Development

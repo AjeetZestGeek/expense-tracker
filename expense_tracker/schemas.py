@@ -1,5 +1,6 @@
 """Pydantic schemas used by the REST API."""
 
+from uuid import UUID
 from datetime import date
 
 from pydantic import BaseModel, ConfigDict, Field
@@ -25,7 +26,7 @@ class ExpenseResponse(BaseModel):
     Reponse schema for an expense.
     """
 
-    id: int
+    id: UUID
     amount: float
     category: str
     description: str
