@@ -1,13 +1,20 @@
 """Expense API endpoints."""
 
+from datetime import date
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, status, HTTPException, Response
+from fastapi import APIRouter, Depends, status, HTTPException, Response, Query
 
 from expense_tracker.api.dependencies import get_expense_manager
 from expense_tracker.api.mappers import to_expense_response
 from expense_tracker.manager import ExpenseManager
-from expense_tracker.schemas import ExpenseCreate, ExpenseResponse, ExpenseUpdate
+from expense_tracker.schemas import (
+    ExpenseCreate,
+    ExpenseResponse,
+    ExpenseUpdate,
+    ExpenseTotalResponse,
+    ExpenseCountResponse,
+)
 
 router = APIRouter(
     prefix="/expenses",
@@ -55,6 +62,109 @@ def create_expense(
     expense_id = len(expenses) - 1
 
     return to_expense_response(created)
+
+
+@router.get(
+    "/search",
+    response_model=list[ExpenseResponse],
+    summary="Search expenses",
+)
+def search_expenses(
+    q: str = Query(..., min_length=1),
+    manager: ExpenseManager = Depends(get_expense_manager),
+) -> list[ExpenseResponse]:
+    """
+    Search expenses by category or description.
+    """
+    print(q)
+    expenses = manager.search_expenses(q)
+
+    print(expenses)
+
+    return [to_expense_response(expense) for expense in expenses]
+
+
+@router.get(
+    "/category/{category}",
+    response_model=list[ExpenseResponse],
+    summary="Filter expenses by category",
+)
+def filter_by_category(
+    category: str,
+    manager: ExpenseManager = Depends(get_expense_manager),
+) -> list[ExpenseResponse]:
+    """Return expenses belonging to a category."""
+
+    expenses = manager.filter_by_category(category)
+
+    return [to_expense_response(expense) for expense in expenses]
+
+
+@router.get(
+    "/date/{expense_date}",
+    response_model=list[ExpenseResponse],
+    summary="Get expenses by date",
+)
+def get_expenses_by_date(
+    expense_date: date,
+    manager: ExpenseManager = Depends(get_expense_manager),
+) -> list[ExpenseResponse]:
+    """Return expenses for a specific date."""
+
+    expenses = manager.expenses_by_date(expense_date)
+
+    return [to_expense_response(expense) for expense in expenses]
+
+
+@router.get(
+    "/total",
+    response_model=ExpenseTotalResponse,
+    summary="Get total expenses",
+)
+def get_total_expenses(
+    manager: ExpenseManager = Depends(get_expense_manager),
+) -> ExpenseTotalResponse:
+    """Return the total amount of all expenses."""
+
+    total = manager.total_expenses()
+
+    return ExpenseTotalResponse(total=total)
+
+
+@router.get(
+    "/count",
+    response_model=ExpenseCountResponse,
+    summary="Get expense count",
+)
+def get_expense_count(
+    manager: ExpenseManager = Depends(get_expense_manager),
+) -> ExpenseCountResponse:
+    """Return the total number of expenses."""
+
+    count = manager.count_expenses()
+
+    return ExpenseCountResponse(count=count)
+
+
+@router.get(
+    "/latest",
+    response_model=ExpenseResponse,
+    summary="Get latest expense",
+)
+def get_latest_expense(
+    manager: ExpenseManager = Depends(get_expense_manager),
+) -> ExpenseResponse:
+    """Return the most recent expense."""
+
+    expense = manager.latest_expense()
+
+    if expense is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="No expenses found",
+        )
+
+    return to_expense_response(expense)
 
 
 @router.get(

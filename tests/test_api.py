@@ -63,6 +63,7 @@ def test_update_expense(client):
     assert response.status_code == 200
     assert response.json()["amount"] == 999
 
+
 def test_delete_expense(client):
     expenses = client.get("/expenses").json()
 
@@ -75,3 +76,89 @@ def test_delete_expense(client):
     response = client.get(f"/expenses/{expense_id}")
 
     assert response.status_code == 404
+
+
+def test_filter_expenses_by_category(client):
+    response = client.get("/expenses/category/Food")
+
+    assert response.status_code == 200
+
+    expenses = response.json()
+
+    assert all(expense["category"].lower() == "food" for expense in expenses)
+
+
+def test_filter_expenses_by_unknown_category(client):
+    response = client.get("/expenses/category/Unknown")
+
+    assert response.status_code == 200
+    assert response.json() == []
+
+
+def test_get_expenses_by_date(client):
+    response = client.get("/expenses/date/2026-08-05")
+
+    assert response.status_code == 200
+
+    expenses = response.json()
+
+    assert all(expense["expense_date"] == "2026-08-05" for expense in expenses)
+
+
+def test_get_expenses_by_date_no_results(client):
+    response = client.get("/expenses/date/2030-01-01")
+
+    assert response.status_code == 200
+    assert response.json() == []
+
+
+def test_get_total_expenses(client):
+    response = client.get("/expenses/total")
+
+    assert response.status_code == 200
+
+    data = response.json()
+
+    assert "total" in data
+    assert isinstance(data["total"], (int, float))
+
+
+def test_get_total_expenses(client):
+    response = client.get("/expenses/total")
+
+    assert response.status_code == 200
+    assert response.json()["total"] == 10668.0
+
+
+def test_get_expense_count(client):
+    response = client.get("/expenses/count")
+
+    assert response.status_code == 200
+
+    data = response.json()
+
+    assert "count" in data
+    assert isinstance(data["count"], int)
+    assert data["count"] >= 0
+
+
+def test_get_latest_expense(client):
+    response = client.get("/expenses/latest")
+
+    assert response.status_code == 200
+
+    data = response.json()
+
+    assert "id" in data
+    assert "amount" in data
+    assert "category" in data
+    assert "description" in data
+    assert "expense_date" in data
+
+
+def test_get_latest_expense_when_empty(client):
+    # This test should use an isolated empty storage fixture.
+    response = client.get("/expenses/latest")
+
+    assert response.status_code == 404
+    assert response.json()["detail"] == "No expenses found"

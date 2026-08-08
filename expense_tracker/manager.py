@@ -81,24 +81,37 @@ class ExpenseManager:
 
         return True
 
-    def search(self, keyword: str) -> list[Expense]:
-        keyword = keyword.lower()
+    def search_expenses(self, query: str) -> list[Expense]:
+        """
+        Search expenses by category or description.
+        """
+
+        query = query.strip().lower()
 
         return [
             expense
             for expense in self.expenses
-            if keyword in expense.category.lower()
-            or keyword in expense.description.lower()
+            if query in expense.category.lower() or query in expense.description.lower()
         ]
 
     def filter_by_category(self, category: str) -> list[Expense]:
-        category = category.lower()
+        """
+        Return expenses matching the given category.
+
+        Args:
+            category: Category to filter by.
+
+        Returns:
+            List of matching expenses.
+        """
+        category = category.strip().lower()
 
         return [
             expense for expense in self.expenses if expense.category.lower() == category
         ]
 
     def total_expenses(self) -> float:
+        """Return the total amount of all expenses."""
         return sum(expense.amount for expense in self.expenses)
 
     def update_expense(
@@ -135,20 +148,34 @@ class ExpenseManager:
         return expense
 
     def count_expenses(self) -> int:
-        """Return the total number of expenses."""
+        """Return the number of expenses."""
         return len(self.expenses)
 
     def latest_expense(self) -> Expense | None:
+        """
+        Return the most recent expense.
+
+        Returns:
+            The latest expense, or None if no expenses exist.
+        """
         if not self.expenses:
             return None
 
-        return self.expenses[-1]
+        return max(
+            self.expenses,
+            key=lambda expense: expense.expense_date,
+        )
 
-    def expenses_by_date(
-        self,
-        expense_date: date,
-    ) -> list[Expense]:
-        """Return expenses for a specific date."""
+    def expenses_by_date(self, expense_date: date) -> list[Expense]:
+        """
+        Return expenses for a specific date.
+
+        Args:
+            expense_date: Date to filter expenses by.
+
+        Returns:
+            List of matching expenses.
+        """
         return [
             expense for expense in self.expenses if expense.expense_date == expense_date
         ]
