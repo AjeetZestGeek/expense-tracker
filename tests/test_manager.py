@@ -27,9 +27,10 @@ def test_search(manager):
         date.today(),
     )
 
-    results = manager.search("shoe")
+    results = manager.search_expenses("shoe")
 
     assert len(results) == 1
+    assert manager.search_expenses("Laptop") == []
 
 
 def test_filter(manager):
@@ -53,14 +54,14 @@ def test_filter(manager):
 
 
 def test_delete(manager):
-    manager.add_expense(
+    expense = manager.add_expense(
         100,
         "Food",
         "Pizza",
         date.today(),
     )
 
-    manager.delete_expense(0)
+    manager.delete_expense(expense.id)
 
     assert len(manager.get_all_expenses()) == 0
 
@@ -73,11 +74,11 @@ def test_search_not_found(manager):
         date.today(),
     )
 
-    assert manager.search("Laptop") == []
+    assert manager.search_expenses("Laptop") == []
 
 
 def test_update_expense(manager):
-    manager.add_expense(
+    expense = manager.add_expense(
         100,
         "Food",
         "Pizza",
@@ -85,7 +86,7 @@ def test_update_expense(manager):
     )
 
     updated = manager.update_expense(
-        0,
+        expense.id,
         amount=250,
         description="Burger",
     )

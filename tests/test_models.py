@@ -1,3 +1,4 @@
+from uuid import uuid4
 from datetime import date
 
 import pytest
@@ -64,7 +65,10 @@ def test_to_dict():
 
 
 def test_from_dict():
+    expense_id = uuid4()
+
     data = {
+        "id": str(expense_id),
         "amount": 450,
         "category": "Shopping",
         "description": "Shoes",
@@ -73,5 +77,8 @@ def test_from_dict():
 
     expense = Expense.from_dict(data)
 
+    assert expense.id == expense_id
     assert expense.amount == 450
     assert expense.category == "Shopping"
+    assert expense.description == "Shoes"
+    assert expense.expense_date == date(2026, 7, 9)
