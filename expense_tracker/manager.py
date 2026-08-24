@@ -162,9 +162,9 @@ class ExpenseManager:
             return None
 
         return max(
-            self.expenses,
-            key=lambda expense: expense.expense_date,
-        )
+            enumerate(self.expenses),
+            key=lambda item: (item[1].expense_date, item[0]),
+        )[1]
 
     def expenses_by_date(self, expense_date: date) -> list[Expense]:
         """
